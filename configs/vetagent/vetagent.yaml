@@ -1,0 +1,130 @@
+# E:\VETAgent\configs\vetagent\vetagent.yaml
+project:
+  name: "VETAgent"
+  version: "agent_v2"
+  seed: 123
+
+# -------------------------
+# ✅ SSOT Lock: 모든 스펙은 여기만
+# -------------------------
+model_spec:
+  dim: 64
+  bias: 1
+  volterra_rank: 2
+  patch: 256
+  in_chans: 3
+
+actions:
+  enabled: ["drop","snow","rain","blur","haze"]
+  order:   ["drop","snow","rain","blur","haze"]
+
+data_root: "E:/VETAgent/data"
+
+ckpt:
+  backbone_dir: "E:/VETAgent/checkpoints/backbone"
+
+# -------------------------
+# backbone: 경로/옵션만
+# (❌ dim/bias/rank/patch/in_chans 넣지 말 것)
+# -------------------------
+backbone:
+  name: "VETNet"
+  ckpt: ""          # 학습중이면 비워도 됨
+  strict: false
+  fingerprint_fields: ["name","dim","bias","volterra_rank","actions.order"]
+
+# -------------------------
+# train_backbone에서는 빈 값 허용
+# agent 모드로 돌릴 때 채우면 됨
+# -------------------------
+toolbank:
+  lora_root: ""
+  tools:
+    drop: ""
+    snow: ""
+    rain: ""
+    blur: ""
+    haze: ""
+
+diagnoser:
+  name: ""
+  ckpt: ""
+  num_actions: 5
+  input_size: 224
+  postprocess: "softmax"
+  uncertainty:
+    type: "entropy_margin"
+    tau_u: 0.6
+
+# -------------------------
+# v2 모듈 설정 (agent 모드에서 쓰임)
+# train_backbone에서도 load는 통과해도 되게 기본값 OK
+# -------------------------
+calib:
+  bucket_table_path: ""     # 나중에 채워도 됨
+  beta_ema: 0.05
+  w_bucket: 0.7
+  clamp_minmax: [0.0, 1.0]
+  ema_gate:
+    enable: true
+    update_if_max_score_below: 0.35
+
+noharm:
+  enable: true
+  thresholds:
+    halo: 0.15
+    sharpness: 0.20
+    noise: 0.20
+    color: 0.15
+  metrics: ["halo","sharpness","noise","color"]
+
+router:
+  topk: 3
+  schedule_rules: "default_v1"
+  alpha_rule: "score_linear_v1"
+  composite_enable: false
+  alpha_limits: [0.1, 1.0]
+  uncertainty_damp:
+    enable: true
+    k: 0.5
+
+stop:
+  tau_abs: 0.08
+  delta_dom_min: 0.005
+  patience: 2
+  harm_gate: true
+  max_steps: 8
+
+safety_fsm:
+  repeat_cap: 3
+  cooldown: 1
+  alpha_anneal:
+    enable: true
+    gamma: 0.85
+  max_steps: 8
+  rollback_mode: "best_then_stop"
+
+rollback:
+  mode: "J"   # "pareto" | "J"
+  weights:
+    w_dom: 1.0
+    w_sum: 0.2
+    w_h: 0.8
+
+runtime:
+  device: "cuda"
+  use_amp: true
+  channels_last: true
+  tf32: true
+
+datasets:
+  backbone_mix:
+    train:
+      - { name: "CSD", input_dir: "CSD/Train/Snow", gt_dir: "CSD/Train/Gt" }
+      - { name: "rain100H", input_dir: "rain100H/train/rain", gt_dir: "rain100H/train/norain" }
+      - { name: "rain100L", input_dir: "rain100L/train/rain", gt_dir: "rain100L/train/norain" }
+      - { name: "RESIDE-6K", input_dir: "RESIDE-6K/train/hazy", gt_dir: "RESIDE-6K/train/GT" }
+      - { name: "DayRainDrop_Train", input_dir: "DayRainDrop_Train/Drop", gt_dir: "DayRainDrop_Train/Clear" }
+      - { name: "NightRainDrop_Train", input_dir: "NightRainDrop_Train/Drop", gt_dir: "NightRainDrop_Train/Clear" }
+      - { name: "GOPRO", csv: "GOPRO/gopro_train_pairs.csv" }
+      - { name: "HIDE_dataset", txt: "HIDE_dataset/train.txt", input_root: "HIDE_dataset/train", gt_root: "HIDE_dataset/GT" }
