@@ -791,12 +791,9 @@ python -m script.train_backbone_vetnet --cfg E:/VETAgent/configs/vetagent/vetage
   --epochs 50 --batch_size 1 --num_workers 4 `
   --metric_every 200 --metric_images 1 `
   --iter_save_interval 200
-
 """
 
 # 이어서 학습
-from __future__ import annotations
-
 # ------------------------------------------------------------
 # VETNet Backbone Training (SSOT(model_spec) first) + RESUME
 # ------------------------------------------------------------
@@ -1470,7 +1467,7 @@ def main():
         out_name = f"epoch_{epoch:03d}_L{epoch_loss:.4f}_P{epoch_psnr:.2f}_S{epoch_ssim:.4f}.pth"
         out_path = os.path.join(save_dir, out_name)
         torch.save(ckpt, out_path)
-        print(f"[CKPT] saved: {out_path}")
+        print(f"[CK PT] saved: {out_path}")
 
     print("\nTraining finished.")
 
@@ -1489,5 +1486,5 @@ python -m script.train_backbone_vetnet `
   --metric_images_per_batch 1 `
   --iter_save_interval 200 `
   --resume 1 `
-  --resume_ckpt "E:/VETAgent/checkpoints/backbone/epoch_004_L0.0475_P23.95_S0.7573.pth"
+  --resume_ckpt "E:/VETAgent/checkpoints/backbone/epoch_027_L0.0340_P27.62_S0.8422.pth"
 """
