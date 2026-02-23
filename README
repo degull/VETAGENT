@@ -1,0 +1,50 @@
+VETAgent/
+│
+├── checkpoints/                  # Trained model checkpoints
+│   ├── backbone/                 # VETNet backbone weights
+│   └── diagnoser/                # Diagnoser model weights
+│
+├── configs/                      # YAML configuration files
+│
+├── data/                         # Datasets (not included in repo)
+│   ├── CSD/                      # Desnowing dataset
+│   ├── DayRainDrop_Train/        # Raindrop dataset (day)
+│   ├── NightRainDrop_Train/      # Raindrop dataset (night)
+│   ├── rain100H/                 # Heavy rain dataset
+│   ├── rain100L/                 # Light rain dataset
+│   ├── GOPRO/                    # Motion blur dataset
+│   ├── HIDE_dataset/             # Real blur dataset
+│   └── RESIDE-6K/                # Dehazing dataset
+│
+├── models/                       # Backbone model implementations
+│   ├── backbone/                 # VETNet backbone architecture
+│   ├── __init__.py
+│   └── __pycache__/
+│
+├── results/                      # Inference and evaluation outputs
+│
+├── script/                       # Training / evaluation scripts
+│   ├── train_backbone_vetnet.py
+│   ├── train_diagnoser_d1.py
+│   ├── infer_backbone_vetnet.py
+│   ├── eval_backbone.py
+│   ├── check_cfg.py
+│   ├── check_factory.py
+│   ├── check_meta_imports.py
+│   └── __pycache__/
+│
+├── vetagent/                     # Core Agent framework (main package)
+│   ├── adapters/                 # Tool adapters / interface modules
+│   ├── config/                   # Config schema & loader
+│   ├── core/                     # Agent core logic
+│   ├── diagnose/                 # Diagnoser modules
+│   │   ├── diagnoser_net.py
+│   │   └── diagnoser_rule.py
+│   ├── factory/                  # Model/Module factory builders
+│   ├── logger/                   # Logging / reporting utilities
+│   ├── meta/                     # Meta information & compatibility checks
+│   ├── modules/                  # Shared building blocks
+│   ├── __init__.py
+│   └── version.py
+│
+└── .gitignore
